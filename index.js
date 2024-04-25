@@ -2,6 +2,9 @@ const express = require('express');
 const path = require('path');
 require('dotenv').config();
 
+const userRoutes = require('./routes/user');
+const loginRoutes = require('./routes/login');
+
 
 const app = express();
 const PORT = process.env.PORT;
@@ -17,19 +20,10 @@ app.set("views", [
 
 app.use(express.static(__dirname + "/public"));
 
-//url path.
 
-app.get('/', (req,res)=>{
+//inisialisasi routes.
 
-    //buat variabel dengan nilai untuk title halaman.
-
-    const title = "To-Do List Page";
-
-    res.render('index',{
-        title
-    });
-})
-
+app.use('/', userRoutes, loginRoutes);
 
 
 app.listen(PORT,()=>{
