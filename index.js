@@ -1,6 +1,10 @@
 const express = require('express');
 const path = require('path');
+const session = require('express-session');
+const flash = require('connect-flash');
+const methodOverride = require('method-override');
 require('dotenv').config();
+const database = require('./utils/database');
 
 const userRoutes = require('./routes/user');
 const loginRoutes = require('./routes/login');
@@ -9,6 +13,14 @@ const loginRoutes = require('./routes/login');
 const app = express();
 const PORT = process.env.PORT;
 
+database.connect();
+
+app.use(session({
+    proxy: true,
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: true,
+}));
 
 //inisialisasi view engine ejs.
 app.set('view engine', 'ejs');
@@ -16,15 +28,24 @@ app.set("views", [
     path.join(__dirname, "/views"),
 ]);
 
+// Flash Messages
+app.use(flash({ sessionKeyName: 'flashMessage' }));
+// Menambahkan middleware body-parser pada aplikasi
+// app.use(bodyParser.json());
+// // parse request to body-parser
+// app.use(bodyParser.urlencoded({ extended : true}))
 
+app.use(methodOverride('_method'));
 
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.static(__dirname + "/public"));
 
 
 //inisialisasi routes.
 
-app.use('/', userRoutes, loginRoutes);
-
+app.use('/', loginRoutes);
+app.use('/user',userRoutes)
 
 app.listen(PORT,()=>{
     console.log('server berjalan pada port ' + PORT);

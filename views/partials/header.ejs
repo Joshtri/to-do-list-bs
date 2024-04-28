@@ -3,6 +3,16 @@
     <a class="navbar-brand fw-bold" href="#">
       To-Do List
     </a>
+    <div class="form-check form-switch ms-auto mx-2">
+      <label class="form-check-label" for="flexSwitchCheckChecked">Switch Dark Mode</label>
+      <input
+        class="form-check-input p-2"
+        type="checkbox"
+        role="switch"
+        id="flexSwitchCheckChecked"
+        onclick="toggleTheme()"
+      />
+    </div>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -17,14 +27,14 @@
             Profil Anda
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Informasi Akun</a></li>
+            <li><a class="dropdown-item" href="/user/informasi_akun">Informasi Akun</a></li>
             <li><a class="dropdown-item" href="#">---</a></li>
             <li><hr class="dropdown-divider"></li>
             <!-- <li><a class="dropdown-item" href="#">Something else here</a></li> -->
           </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link disabled" aria-disabled="true">Log Out</a>
+          <a href="/user/logout" class="nav-link" aria-disabled="false">Log Out</a>
         </li>
       </ul>
 
