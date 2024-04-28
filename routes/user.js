@@ -30,6 +30,6 @@ router.get('/logout', (req, res) => {
 
 router.get('/informasi_akun', protect, UserController.informasiAkunPage);
 
-
+router.post('/update_user/:id_user', UserController.updateUserData)
 
 module.exports = router;

@@ -163,3 +163,47 @@ exports.informasiAkunPage = (req,res)=>{
         user: userData
     })
 }
+
+
+exports.updateTodoUser = (req, res) => {
+    const { subject } = req.body; // Mengambil subjek yang baru dari body request
+
+    const id_todo = req.params.id_todo; // Mengambil ID todo dari parameter URL
+
+    const updateSubjectQuery = "UPDATE todo SET subjek_tugas = ? WHERE id_todo = ?"; // Query SQL untuk memperbarui subjek todo
+
+    // Jalankan query dengan parameter yang diberikan
+    db.query(updateSubjectQuery, [subject, id_todo], (err, result) => {
+        if (err) {
+            // Jika terjadi kesalahan saat menjalankan query
+            console.log("Error updating subject:", err);
+            res.status(500).json({ error: "Error updating subject" });
+        } else {
+            // Jika berhasil memperbarui subjek
+            console.log("Subject updated successfully");
+            res.status(200).json({ message: "Subject updated successfully" });
+        }
+    });
+};
+
+exports.updateUserData = (req, res) => {
+    const { username,nama_lengkap,email } = req.body; // Mengambil subjek yang baru dari body request
+
+    const id_user = req.params.id_user; // Mengambil ID todo dari parameter URL
+
+    const updateUserQuery = "UPDATE user SET username = ?, nama_lengkap = ?, email = ? WHERE id_user = ?"; // Query SQL untuk memperbarui subjek todo
+
+    // Jalankan query dengan parameter yang diberikan
+    db.query(updateUserQuery, [username,nama_lengkap,email, id_user], (err, result) => {
+        if (err) {
+            // Jika terjadi kesalahan saat menjalankan query
+            console.log("Error updating userdata:", err);
+            res.status(500).json({ error: "Error updating subject" });
+        } else {
+            // Jika berhasil memperbarui subjek
+            console.log("userdata updated successfully");
+            // res.status(200).json({ message: "Subject updated successfully" });
+            res.redirect('/user/informasi_akun')
+        }
+    });
+};

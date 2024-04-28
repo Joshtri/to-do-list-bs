@@ -41,15 +41,21 @@
                         <th scope="col">Username</th>
                         <th scope="col">Email</th>
                         <th scope="col"></th>
+                        <th scope="col"></th>
                     </tr>
                 </thead>
                 <tbody>
                     <!-- Data akun bisa diisi dengan data yang berasal dari backend -->
                     <tr>
-                        <td class="text-capitalize"><%= user.nama_lengkap %></td>
-                        <td><%= user.username %></td>
-                        <td><%= user.email %></td>
-                        <td><i class="fa-solid fa-pen-to-square" style="color: #74C0FC;"></i></td>
+                        <td id="nama_lengkap" contenteditable="true"  oninput="showSaveButton()" class="text-capitalize"><%= user.nama_lengkap %></td>
+                        <td id="username" contenteditable="true" oninput="showSaveButton()"><%= user.username %></td>
+                        <td id="email" contenteditable="true" oninput="showSaveButton()"><%= user.email %></td>
+                        <td>
+                            <i onclick="editUser('<%= user.id_user %>')" class="fa-solid fa-pen-to-square" style="color: #74C0FC;"></i>
+                        </td>
+                        <td>
+                            <i onclick="saveUpdate('<%= user.id_user %>')" id="save_update" class="fa-solid fa-floppy-disk fa-fade" style="color: #74C0FC; display:none;"></i>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -64,6 +70,76 @@
 
     <!-- Include script for dark mode -->
     <script src="/js/darkMode.js"></script>
+
+
+    <script>
+        function showSaveButton(){
+            document.getElementById('save_update').style.display = 'inline-block';
+        }
+
+        // Fungsi untuk mengubah subjek menjadi dapat diedit
+        function editUser(userId) {
+            var usernameElement = document.getElementById('username');
+            var namaLengkapElement = document.getElementById('nama_lengkap');
+            var emailElement = document.getElementById('email');
+
+            usernameElement.contentEditable = true; // Set subjek menjadi dapat diedit
+            namaLengkapElement.contentEditable = true;
+            emailElement.contentEditable = true;
+
+            usernameElement.focus(); // Berikan fokus ke username
+            namaLengkapElement.focus(); // Berikan fokus ke nama_lengkap
+            emailElement.focus(); // Berikan fokus ke email
+
+            document.getElementById('save_update').style.display = 'inline-block'; // Tampilkan tombol simpan
+        }
+    </script>
+
+    <script>
+        
+        function saveUpdate(userId){
+            var usernameElement = document.getElementById('username');
+            var namaLengkapElement = document.getElementById('nama_lengkap');
+            var emailElement = document.getElementById('email');
+
+            //ambil TEXT.
+            var newUsername = usernameElement.innerText;
+            var newNamaLengkap = namaLengkapElement.innerText;
+            var newEmail = emailElement.innerText;
+
+            usernameElement.contentEditable = false; // Set username menjadi tidak dapat diedit lagi
+            namaLengkapElement.contentEditable = false; // Set nama_lengkap menjadi tidak dapat diedit lagi
+            emailElement.contentEditable = false; // Set email menjadi tidak dapat diedit lagi
+            // Kirim permintaan AJAX atau lakukan tindakan lain untuk menyimpan subjek yang baru ke server
+            // Misalnya:
+
+
+            fetch(`/user/update_user/${userId}`,{
+                method: 'POST',
+                body: JSON.stringify({
+                    username : newUsername,
+                    nama_lengkap : newNamaLengkap,
+                    email : newEmail
+                }),
+                headers:{
+                    'Content-Type': 'application/json' // Atur header Content-Type
+                }
+            })
+            .then(response =>{
+                //handle response.
+                console.log("Data updated successfully");
+                document.getElementById('save_update').style.display = 'none';
+                window.location.href = '/user/logout'; // Redirect ke halaman utama
+            })
+
+
+            .catch(error =>{
+                //handle error.
+                console.error('Error updating data', error);
+                alert("Error updatingdata, coba lagi.");
+            })
+        }
+    </script>
     <!-- Import Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
