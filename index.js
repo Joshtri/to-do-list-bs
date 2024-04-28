@@ -5,6 +5,8 @@ const flash = require('connect-flash');
 const methodOverride = require('method-override');
 require('dotenv').config();
 const database = require('./utils/database');
+const redis = require('redis');
+const RedisStore = require("connect-redis").default;
 
 const userRoutes = require('./routes/user');
 const loginRoutes = require('./routes/login');
@@ -15,11 +17,26 @@ const PORT = process.env.PORT;
 
 database.connect();
 
+const client = redis.createClient({
+    password: process.env.REDIS_PASS,
+    socket: { 
+      host: process.env.REDIS_HOST,
+      port: process.env.REDIS_PORT,
+    }
+  });
+(async () => { await client.connect(); })()
+
 app.use(session({
     proxy: true,
     secret: 'secret',
     resave: false,
     saveUninitialized: true,
+    store: new RedisStore({ 
+        client: client,
+        // ttl: 3600, // waktu kadaluwarsa dalam detik (misalnya 1 jam)
+      
+      
+    }),
 }));
 
 //inisialisasi view engine ejs.
