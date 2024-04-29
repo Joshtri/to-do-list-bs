@@ -13,9 +13,16 @@ exports.loginPage = (req,res)=>{
         const locals = {
             title : "Login Page"
         }
+
+        const messageLoginInvalid = req.flash('infoLoginInvalid');
+        const messageCreateAccSuccess = req.flash('infoCreateSuccess');
+
         res.render('index',{
-            locals
+            locals,
+            messageLoginInvalid,
+            messageCreateAccSuccess
         });
+
     } catch (error) {
         console.log(error);
     }
@@ -55,6 +62,7 @@ exports.createAccount = (req, res) => {
                     console.error('Error in inserting user:', err);
                     res.status(500).send('Internal Server Error');
                 } else {
+                    req.flash('infoCreateSuccess', 'Akun berhasil dibuat');
                     res.redirect('/')
                     // res.status(201).send('Akun berhasil dibuat.');
                 }
@@ -80,7 +88,9 @@ exports.loginUser = (req,res)=>{
             }
 
             else if(result.length === 0){
-                res.send('username yang diinput tidak valid')
+                req.flash('infoLoginInvalid', 'username yang diinput tidak valid')
+                // res.send('username yang diinput tidak valid')
+                res.redirect('/');
             }
 
             else{
@@ -96,7 +106,9 @@ exports.loginUser = (req,res)=>{
                         nama_lengkap: result[0].nama_lengkap,
                     }
                 }
+                req.flash('infoLoginSuccess', 'Anda berhasil login di Todo List')
                 res.redirect('/user/todo')
+                
             }
         })
 

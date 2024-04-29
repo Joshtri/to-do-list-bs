@@ -1,5 +1,21 @@
 <nav class="navbar bg-body-tertiary shadow">
   <div class="container-fluid">
-    <a class="navbar-brand fw-bold" href="#"> To-Do List </a>
+    <!-- Logo -->
+    <a class="navbar-brand fw-bold" href="#">
+      <img src="img/todoLogo.png" alt="To-Do List Logo" class="me-0" width="37" height="30">
+      To-Do List
+    </a>
+
+    <!-- Dark Mode Switch -->
+    <div class="form-check form-switch ms-auto">
+      <label class="form-check-label" for="flexSwitchCheckChecked">Switch Dark Mode</label>
+      <input
+        class="form-check-input p-2"
+        type="checkbox"
+        role="switch"
+        id="flexSwitchCheckChecked"
+        onclick="toggleTheme()"
+      />
+    </div>
   </div>
 </nav>

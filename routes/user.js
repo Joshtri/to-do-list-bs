@@ -30,6 +30,8 @@ router.get('/logout', protect, (req, res) => {
 
 router.get('/informasi_akun', protect, UserController.informasiAkunPage);
 
-router.post('/update_user/:id_user', protect, UserController.updateUserData)
+router.post('/update_user/:id_user', protect, UserController.updateUserData);
+
+router.post('/update_pass',UserController.updateUserPass);
 
 module.exports = router;

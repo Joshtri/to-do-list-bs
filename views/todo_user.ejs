@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
-
+    <link rel="icon" href="/img/todoLogo.png" />
 
     <!-- import bootstrap framework -->
     <link rel="stylesheet" href="/vendor/bootstrap/bootstrap.min.css">
@@ -22,19 +22,38 @@
 <body class="animate__animated animate__fadeIn" data-bs-theme="light">
 <!-- Pastikan Anda telah menyertakan library jQuery dan jQuery UI di halaman Anda -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<!-- <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"> -->
+<!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
     
     <!-- header start -->
     <%-include('partials/header'); %>
 
 
-
-    <!-- header end -->
-
-
+    <style>
+        .notification {
+            position: absolute;
+            z-index: 9999; /* Menetapkan z-index yang tinggi */
+            right: 10px;
+        }
+    </style>
+    
+    <% if(messageLoginSuccess && messageLoginSuccess.length > 0) { %>
+        <%  messageLoginSuccess.forEach(message => { %>
+            <div class="animate__animate animate__fadeIn toast align-items-center bg-primary-subtle show notification mt-2" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        <%= message %>
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+            </div>
+        <% }) %>
+    <% } %>
+    
+    
     <!-- main content. -->
-    <div class="container mt-3">
+    <div class="container mt-3 mb-5">
+
 
         <div class="card border border-0 shadow">
             <div class="card-body ">
@@ -49,7 +68,7 @@
 
 
         <div class="row mt-3 justify-content-between">
-            <div class="card animate__animated animate__fadeInLeft border border-0 p-3 shadow mt-4 col-lg-4">
+            <div class="card animate__animated animate__fadeInLeft border border-0 p-3 shadow mt-4 col-lg-4" style="height: 260px;">
 
                 <form action="/user/post_my_todo" method="POST">
                     <input type="hidden" name="user_id" value="<%= user.id_user %>">              
@@ -101,50 +120,7 @@
                                     <!-- <button class="dropdown-item" onclick="saveDeadline('<%= todoData[i].id_todo %>')">Simpan</button> -->
                                 </div>
                             </td>
-                            
-                            
-                            <script>
-                                function toggleDeadlineDropdown(todoId) {
-                                    var dropdown = document.getElementById('dropdownMenu_' + todoId);
-                                    if (dropdown.style.display === 'none' || dropdown.style.display === '') {
-                                        dropdown.style.display = 'block';
-                                    } else {
-                                        dropdown.style.display = 'none';
-                                    }
-                                }
-                            </script>
-                            
-                            <script>
-                                function saveDeadline(todoId) {
-                                    var newDeadline = document.getElementById('deadline_input_' + todoId).value;
-                                    // Kirim permintaan AJAX atau lakukan tindakan lain untuk menyimpan tanggal baru ke server
-                                    // Misalnya:
-                                    fetch('/user/update_deadline_todo/' + todoId, {
-                                        method: 'POST',
-                                        body: JSON.stringify({ deadline: newDeadline }), // Kirim tanggal baru dalam format JSON
-                                        headers: {
-                                            'Content-Type': 'application/json' // Atur header Content-Type
-                                        }
-                                    })
-                                    .then(response => {
-                                        // Handle response
-                                        console.log("Deadline updated successfully");
-                                        // Update tampilan deadline yang ditampilkan kepada pengguna
-                                        document.getElementById('deadline_' + todoId).innerText = new Date(newDeadline).toLocaleString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-                                        toggleDeadlineDropdown(todoId); // Tutup dropdown setelah menyimpan
-                                    })
-                                    .catch(error => {
-                                        // Handle error
-                                        console.error("Error updating deadline:", error);
-                                        alert("Error updating deadline. Please try again."); // Tampilkan pesan kesalahan kepada pengguna
-                                    });
-                                }
-                            </script>
-                            
-                            
-
-
-                                                        
+                                            
                             
 
                             <td class="text-center">
@@ -153,7 +129,7 @@
                                   <!-- Tambahkan atribut name -->
                                   <% if(todoData[i].status === 'selesai') { %>
                                     <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault_<%= todoData[i].id_todo %>" name="status" onchange="updateValue(this)" checked>
-                                  <% } else if(todoData[i].status === '') { %>
+                                  <% } else if(todoData[i].status === 'belum') { %>
                                     <input class="form-check-input" type="checkbox" value="selesai" id="flexCheckDefault_<%= todoData[i].id_todo %>" name="status" onchange="updateValue(this)">
                                   <% } %>
                                   <!-- Tambahkan input tersembunyi untuk menyimpan id_todo -->

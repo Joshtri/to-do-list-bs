@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= locals.title %></title>
 
-    
+    <link rel="icon" href="/img/todoLogo.png" />
     <!-- import bootstrap framework -->
     <link rel="stylesheet" href="/vendor/bootstrap/bootstrap.min.css">
 
@@ -21,34 +21,54 @@
 <body data-bs-theme="light">
   
     <%-include('partials/header_login'); %>
-
+    <style>
+      .notification{
+        position: absolute;
+        /* right: 10px; */
+      }
+    </style>
 
     
     <div class="container">
-      <div class="d-flex align-items-center p-0">
-        <h3 class="text-capitalize mt-4">Login</h3>
-        <div class="form-check form-switch ms-auto">
-          <label class="form-check-label" for="flexSwitchCheckChecked">Switch Dark Mode</label>
-          <input
-            class="form-check-input p-2"
-            type="checkbox"
-            role="switch"
-            id="flexSwitchCheckChecked"
-            onclick="toggleTheme()"
-          />
+
+
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h3 class="text-capitalize mt-4">Login</h3>
+        </div>
+        <div class="col-md-6">
+          <% if (messageLoginInvalid && messageLoginInvalid.length > 0) { %>
+            <% messageLoginInvalid.forEach(message => { %>
+              <div class="alert small alert-warning alert-dismissible fade show mt-4 bg-opacity-10" role="alert">
+                <strong><%= message %></strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            <% }) %>
+          <% } %>
+
+          <% if (messageCreateAccSuccess && messageCreateAccSuccess.length > 0) { %>
+            <% messageCreateAccSuccess.forEach(message => { %>
+            <div class="alert alert-warning alert-dismissible fade show notification bg-opacity-10" role="alert">
+                <strong><%= message %></strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <% }) %>
+          <% } %>
+
         </div>
       </div>
+
       <hr class="mb-5">
       <div class="card col-lg-6 border-0 shadow mx-auto">
         <div class="card-body">
         
           <form action="/post_login" method="POST">
             <div class="form-floating mb-3">
-              <input type="text" class="form-control" name="username" id="floatingInput" placeholder="name@example.com">
+              <input type="text" class="form-control" name="username" id="floatingInput" placeholder="name@example.com" required>
               <label for="floatingInput">Username</label>
             </div>
             <div class="form-floating">
-              <input type="password" class="form-control" name="password" id="floatingPassword" placeholder="Password">
+              <input type="password" class="form-control" name="password" id="floatingPassword" placeholder="Password"required>
               <label for="floatingPassword">Password</label>
             </div>
             <div class="mt-2">
@@ -75,27 +95,27 @@
             <form action="/create_new_account" method="post">
               <div class="modal-body">
                 <div class="form-floating mb-3">
-                  <input type="text" class="form-control" name="nama_depan" id="floatingInput" placeholder="name@example.com">
+                  <input type="text" class="form-control" name="nama_depan" id="floatingInput" placeholder="name@example.com" required>
                   <label for="floatingInput">Nama Depan</label>
                 </div>
 
                 <div class="form-floating mb-3">
-                  <input type="text" class="form-control" name="nama_belakang" id="floatingInput" placeholder="name@example.com">
+                  <input type="text" class="form-control" name="nama_belakang" id="floatingInput" placeholder="name@example.com" required>
                   <label for="floatingInput">Nama Belakang</label>
                 </div>
 
                 <div class="form-floating mb-3">
-                  <input type="text" class="form-control" name="username" id="floatingInput" placeholder="name@example.com">
+                  <input type="text" class="form-control" name="username" id="floatingInput" placeholder="name@example.com"required>
                   <label for="floatingInput">Username</label>
                 </div>
 
                 <div class="form-floating mb-3">
-                  <input type="email" class="form-control" name="email" id="floatingInput" placeholder="name@example.com">
+                  <input type="email" class="form-control" name="email" id="floatingInput" placeholder="name@example.com"required>
                   <label for="floatingInput">Email</label>
                 </div>
 
                 <div class="form-floating">
-                  <input type="password" class="form-control" name="password" id="floatingPassword" placeholder="Password">
+                  <input type="password" class="form-control" name="password" id="floatingPassword" placeholder="Password"required>
                   <label for="floatingPassword">Password</label>
                 </div>
               </div>

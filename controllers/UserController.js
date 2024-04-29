@@ -1,5 +1,6 @@
 const db = require('../utils/database');
-
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 //controller untuk User Main.
 exports.UserPage = (req,res)=>{
@@ -24,6 +25,7 @@ exports.UserPage = (req,res)=>{
             WHERE user_id = '${userData.id_user}';
         `
         const messageCreate = req.flash('infoCreateTodo')
+        const messageLoginSuccess = req.flash('infoLoginSuccess');
 
         db.query(readByIdQuery, (err,results)=>{
             if(err){
@@ -37,7 +39,8 @@ exports.UserPage = (req,res)=>{
                     title,
                     user: userData,
                     todoData : results,
-                    messageCreate
+                    messageCreate,
+                    messageLoginSuccess
                 });
             }
         })
@@ -116,10 +119,13 @@ exports.UserdeleteTodo = (req,res)=>{
 exports.updateStatusTodo = (req, res) => {
     const { status, id_todo } = req.body; // Mengambil status baru dan id dari body request
 
+    // Mengubah status menjadi null jika checkbox tidak dicentang
+    const newStatus = (status === 'selesai') ? status : 'belum';
+
     const updateStatusQuery = "UPDATE todo SET status = ? WHERE id_todo = ?"; // Query SQL untuk memperbarui status todo
 
     // Jalankan query dengan parameter yang diberikan
-    db.query(updateStatusQuery, [status, id_todo], (err, result) => {
+    db.query(updateStatusQuery, [newStatus, id_todo], (err, result) => {
         if (err) {
             // Jika terjadi kesalahan saat menjalankan query
             console.log("Error updating status:", err);
@@ -127,11 +133,12 @@ exports.updateStatusTodo = (req, res) => {
         } else {
             // Jika berhasil memperbarui status
             console.log("Status updated successfully");
-            res.redirect('/user/todo')
+            res.redirect('/user/todo');
             // res.status(200).json({ message: "Status updated successfully" });
         }
     });
 };
+
 
 exports.updateTodoUser = (req, res) => {
     const { subject } = req.body; // Mengambil subjek yang baru dari body request
@@ -207,3 +214,39 @@ exports.updateUserData = (req, res) => {
         }
     });
 };
+
+
+exports.updateUserPass = (req, res) => {
+    // Mendapatkan ID admin dari sesi
+    const userId = req.session.user.id_user;
+
+    // Mendapatkan password baru dari body permintaan
+    const { newPassword } = req.body;
+
+    // Validasi input password baru
+    if (!newPassword || newPassword.length < 3) {
+        return res.status(400).send('Password baru tidak valid');
+    }
+
+    // Hash password baru menggunakan bcrypt
+    bcrypt.hash(newPassword, 10, (hashErr, hashedPassword) => {
+        if (hashErr) {
+            console.error('Error hashing new password:', hashErr);
+            return res.status(500).send('Internal Server Error');
+        }
+
+        // Query untuk mengupdate password baru ke dalam database
+        const queryUpdatePassword = "UPDATE user SET password = ? WHERE id_user = ?";
+
+        db.query(queryUpdatePassword, [hashedPassword, userId], (updateErr, results) => {
+            if (updateErr) {
+                console.error('Error updating password:', updateErr);
+                return res.status(500).send('Internal Server Error');
+            }
+
+            // Password berhasil diubah
+            // Redirect ke halaman login
+            res.redirect('/');
+        });
+    });
+}

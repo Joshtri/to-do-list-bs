@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Informasi Akun</title>
-
+    <link rel="icon" href="/img/todoLogo.png" />
     <!-- Import Bootstrap framework -->
     <link rel="stylesheet" href="/vendor/bootstrap/bootstrap.min.css">
 
@@ -61,8 +61,39 @@
             </table>
         </div>
 
-        <button class="btn btn-danger btn-sm">Ubah Password <i class="fa-solid fa-lock"></i></button>
+        <button class="btn btn-danger btn-sm" data-bs-target="#ubahPassModal" data-bs-toggle="modal">Ubah Password <i class="fa-solid fa-lock"></i></button>
         <!-- <button></button> -->
+
+
+
+                    <!-- Modal -->
+      <div class="modal fade" id="ubahPassModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="staticBackdropLabel">Ubah Password </h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/user/update_pass" method="post">
+              <div class="modal-body">
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" name="newPassword" id="floatingInput" placeholder="name@example.com" required>
+                  <label for="floatingInput">Masukkan Password Baru</label>
+                </div>
+
+                <!-- <div class="form-floating mb-3">
+                  <input type="text" class="form-control" name="nama_belakang" id="floatingInput" placeholder="name@example.com" required>
+                  <label for="floatingInput">Nama Belakang</label>
+                </div> -->
+
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary">Ubah</button>
+              </div>
+            </form>
+        </div>
+      </div>
     </div>
 
     <!-- Include footer -->
