@@ -12,10 +12,13 @@ const userRoutes = require('./routes/user');
 const loginRoutes = require('./routes/login');
 
 
+const server = async()=> {
+
 const app = express();
 const PORT = process.env.PORT;
 
-database.connect();
+const db = await database()
+await db.connect()
 
 const client = redis.createClient({
     password: process.env.REDIS_PASS,
@@ -67,3 +70,6 @@ app.use('/user',userRoutes)
 app.listen(PORT,()=>{
     console.log('server berjalan pada port ' + PORT);
 })
+}
+
+server()
