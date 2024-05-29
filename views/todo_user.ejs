@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
-    <link rel="icon" href="/img/todoLogo.png" />
+    <link rel="icon" href="/img/todoLogo.webp" />
 
     <!-- import bootstrap framework -->
     <link rel="stylesheet" href="/vendor/bootstrap/bootstrap.min.css">
@@ -68,153 +68,206 @@
 
 
         <div class="row mt-3 justify-content-between">
-            <div class="card animate__animated animate__fadeInLeft border border-0 p-3 shadow mt-4 col-lg-4" style="height: 260px;">
+            <div class="mt-4 col-lg-4 border border-3">            
+                <div class="card animate__animated animate__fadeInLeft border border-0 p-3 shadow " style="height: 260px;">
 
-                <form action="/user/post_my_todo" method="POST">
-                    <input type="hidden" name="user_id" value="<%= user.id_user %>">              
-                    <div class="mb-3">
-                        <label for="exampleFormControlInput1" class="form-label">Subjek Tugas</label>
-                        <input type="text" name="subjek_tugas" class="form-control" id="exampleFormControlInput1" placeholder="contoh: makan mie 3 bungkus" >
+                    <form action="/user/post_my_todo" method="POST">
+                        <input type="hidden" name="user_id" value="<%= user.id_user %>">              
+                        <div class="mb-3">
+                            <label for="exampleFormControlInput1" class="form-label">Subjek Tugas</label>
+                            <input type="text" name="subjek_tugas" class="form-control" id="exampleFormControlInput1" placeholder="contoh: makan mie 3 bungkus" >
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleFormControlTextarea1" class="form-label">Deadline</label>
+                            <input type="date" name="deadline" class="form-control" id="exampleFormControlInput1" required>
+                        </div>
+                        <div class="mx-auto mt-4 animate__animated animate__fadeInDown">
+                            <button type="submit" class="btn btn-primary">Tambah Data<i class="mx-1 fa-solid fa-floppy-disk fa-fade"></i></button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+            <div class="border border-2 mt-4 col-lg-7 pb-5">         
+                <div class="card border animate__animated animate__fadeInRight border-0  shadow p-3">
+                    <table>
+                        <thead>
+                            <th class="text-center">No.</th>
+                            <th class="text-center">Subjek</th>
+                            <th class="text-center">Deadline</th>
+                            <th class="text-center">Checklist</th>
+                            <th></th>
+                            <th></th>
+                        </thead>
+
+                        <tbody>
+                            <% for(var i = 0; i < todoData.length ;i++) { %>
+                            <tr class="">
+                                <td>
+                                    <%= i + 1 %>
+                                </td>
+
+                                <td class="editable" id="subjek_<%= todoData[i].id_todo %>" contenteditable="true" oninput="showSaveButton('<%= todoData[i].id_todo %>')">
+                                    <%= todoData[i].subjek_tugas %>
+                                </td>
+                                
+                                <td class="text-center small" onclick="toggleDeadlineDropdown('<%= todoData[i].id_todo %>')">
+                                    <span id="deadline_<%= todoData[i].id_todo %>">
+                                        <%= new Date(todoData[i].deadline).toLocaleString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) %>
+                                    </span>
+                                    <!-- Dropdown menu -->
+                                    <div class="dropdown-menu border-1 shadow-sm" id="dropdownMenu_<%= todoData[i].id_todo %>" style="display: none;">
+                                        <!-- Isi dropdown menu -->
+                                        <input type="date" class="dropdown-item small" id="deadline_input_<%= todoData[i].id_todo %>">
+
+                                        <!-- <button class="dropdown-item" onclick="saveDeadline('<%= todoData[i].id_todo %>')">Simpan</button> -->
+                                    </div>
+                                </td>
+                                                
+                                
+
+                                <td class="text-center">
+                                    <!-- Formulir tidak lagi memerlukan tombol submit -->
+                                    <form action="/user/update_todo/<%= todoData[i].id_todo %>" method="post" id="updateForm_<%= todoData[i].id_todo %>">
+                                    <!-- Tambahkan atribut name -->
+                                    <% if(todoData[i].status === 'selesai') { %>
+                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault_<%= todoData[i].id_todo %>" name="status" onchange="updateValue(this)" checked>
+                                    <% } else if(todoData[i].status === 'belum') { %>
+                                        <input class="form-check-input" type="checkbox" value="selesai" id="flexCheckDefault_<%= todoData[i].id_todo %>" name="status" onchange="updateValue(this)">
+                                    <% } %>
+                                    <!-- Tambahkan input tersembunyi untuk menyimpan id_todo -->
+                                    <input type="hidden" name="id_todo" value="<%= todoData[i].id_todo %>">
+                                    </form>
+                                </td>
+                                
+                                
+                                <script>
+                                    // Fungsi untuk mengupdate nilai input berdasarkan status checkbox
+                                    function updateValue(checkbox) {
+                                        var formId = checkbox.id.replace('flexCheckDefault_', 'updateForm_'); // Dapatkan ID formulir berdasarkan ID checkbox
+                                        var status = checkbox.checked ? 'selesai' : 'b'; // Tentukan status berdasarkan apakah checkbox dicentang
+                                        document.getElementById(formId).querySelector('input[name="status"]').value = status; // Atur nilai input status sesuai dengan status yang ditentukan
+                                        document.getElementById(formId).submit(); // Submit formulir sesuai dengan ID yang diperoleh
+                                    }
+                                
+                                    // Fungsi untuk mengubah subjek menjadi dapat diedit
+                                    function editSubject(todoId) {
+                                        var subjekElement = document.getElementById('subjek_' + todoId);
+                                        subjekElement.contentEditable = true; // Set subjek menjadi dapat diedit
+                                        subjekElement.focus(); // Berikan fokus ke subjek
+                                        document.getElementById('save_' + todoId).style.display = 'inline-block'; // Tampilkan tombol simpan
+                                    }
+                                
+                                    // Fungsi untuk menampilkan tombol simpan setelah pengguna mulai mengedit subjek
+                                    function showSaveButton(todoId) {
+                                        document.getElementById('save_' + todoId).style.display = 'inline-block'; // Tampilkan tombol simpan
+                                    }
+                                
+                                    // Fungsi untuk menyimpan subjek setelah pengguna mengeditnya
+                                    function saveSubject(todoId) {
+                                        var subjekElement = document.getElementById('subjek_' + todoId);
+                                        var newSubject = subjekElement.innerText; // Ambil teks yang telah diubah
+                                        subjekElement.contentEditable = false; // Set subjek menjadi tidak dapat diedit lagi
+                                        // Kirim permintaan AJAX atau lakukan tindakan lain untuk menyimpan subjek yang baru ke server
+                                        // Misalnya:
+                                        fetch('/user/update_subjek_todo/'+todoId, {
+                                            method: 'POST',
+                                            body: JSON.stringify({ subject: newSubject }), // Kirim subjek yang baru dalam format JSON
+                                            headers: {
+                                                'Content-Type': 'application/json' // Atur header Content-Type
+                                            }
+                                        })
+                                        .then(response => {
+                                            // Handle response
+                                            console.log("Subject updated successfully");
+                                            document.getElementById('save_' + todoId).style.display = 'none'; // Sembunyikan tombol simpan setelah penyimpanan berhasil
+                                        })
+                                        .catch(error => {
+                                            // Handle error
+                                            console.error("Error updating subject:", error);
+                                            alert("Error updating subject. Please try again."); // Tampilkan pesan kesalahan kepada pengguna
+                                        });
+                                    }
+
+                                </script>
+                                
+                                
+                                
+                                <td>
+                                    <form action="/user/delete/<%= todoData[i].id_todo %>?_method=DELETE" method="POST">
+                                        
+                                        <input type="hidden" name="_method" value="DELETE">
+                                        <button type="submit" class="btn"><i class="fa-solid fa-delete-left text-danger"></i></button>
+                                    </form>
+                                </td>
+
+                                <td>
+                                    <button class="btn-edit btn" onclick="editSubject('<%= todoData[i].id_todo %>')"><i class="fa-solid fa-pen text-info"></i></button>
+                                </td>
+                                <td>
+                                    <button class="btn-save btn" id="save_<%= todoData[i].id_todo %>" style="display:none;" onclick="saveSubject('<%= todoData[i].id_todo %>')"><i class="fa-solid fa-floppy-disk fa-fade" style="color: #74C0FC;"></i></button>
+                                </td>
+                                <!-- <td>
+                                    <i class="fa-solid fa-pen text-info"></i>
+                                </td> -->
+                            </tr>
+                            <% } %>
+                                
+                        
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+            <!-- <div class="mt-3 p-3 border border-2">
+                <button type="button" class="btn btn-light">
+                    Subjek kelar ✅ <span class="badge text-bg-secondary">4</span>
+                </button>
+            </div> -->
+
+            <div class="accordion mt-5" id="accordionPanelsStayOpenExample">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                        Subjek yang kelar ✅ - <span class="badge mx-1 text-bg-secondary">4</span>
+                    </button>
+                    </h2>
+                    <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
+                        <div class="accordion-body">
+                            <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Subjek Selesai</th>
+                                    <th scope="col">Last</th>
+                                    <th scope="col">Handle</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  <tr>
+                                    <th scope="row">1</th>
+                                    <td>Mark</td>
+                                    <td>Otto</td>
+                                    <td>@mdo</td>
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">2</th>
+                                    <td>Jacob</td>
+                                    <td>Thornton</td>
+                                    <td>@fat</td>
+                                  </tr>
+                                  <tr>
+                                    <th scope="row">3</th>
+                                    <td colspan="2">Larry the Bird</td>
+                                    <td>@twitter</td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="exampleFormControlTextarea1" class="form-label">Deadline</label>
-                        <input type="date" name="deadline" class="form-control" id="exampleFormControlInput1" required>
-                    </div>
-                    <div class="mx-auto mt-4 animate__animated animate__fadeInDown">
-                        <button type="submit" class="btn btn-primary">Tambah Data<i class="mx-1 fa-solid fa-floppy-disk fa-fade"></i></button>
-                    </div>
-                </form>
+                </div>
             </div>
 
-            <div class="card border animate__animated animate__fadeInRight border-0  shadow p-3 mt-4 col-lg-7">
-                <table>
-                    <thead>
-                        <th class="text-center">No.</th>
-                        <th class="text-center">Subjek</th>
-                        <th class="text-center">Deadline</th>
-                        <th class="text-center">Checklist</th>
-                        <th></th>
-                        <th></th>
-                    </thead>
-
-                    <tbody>
-                        <% for(var i = 0; i < todoData.length ;i++) { %>
-                        <tr class="">
-                            <td>
-                                <%= i + 1 %>
-                            </td>
-
-                            <td class="editable" id="subjek_<%= todoData[i].id_todo %>" contenteditable="true" oninput="showSaveButton('<%= todoData[i].id_todo %>')">
-                                <%= todoData[i].subjek_tugas %>
-                            </td>
-                            
-                            <td class="text-center small" onclick="toggleDeadlineDropdown('<%= todoData[i].id_todo %>')">
-                                <span id="deadline_<%= todoData[i].id_todo %>">
-                                    <%= new Date(todoData[i].deadline).toLocaleString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) %>
-                                </span>
-                                <!-- Dropdown menu -->
-                                <div class="dropdown-menu border-1 shadow-sm" id="dropdownMenu_<%= todoData[i].id_todo %>" style="display: none;">
-                                    <!-- Isi dropdown menu -->
-                                    <input type="date" class="dropdown-item small" id="deadline_input_<%= todoData[i].id_todo %>">
-
-                                    <!-- <button class="dropdown-item" onclick="saveDeadline('<%= todoData[i].id_todo %>')">Simpan</button> -->
-                                </div>
-                            </td>
-                                            
-                            
-
-                            <td class="text-center">
-                                <!-- Formulir tidak lagi memerlukan tombol submit -->
-                                <form action="/user/update_todo/<%= todoData[i].id_todo %>" method="post" id="updateForm_<%= todoData[i].id_todo %>">
-                                  <!-- Tambahkan atribut name -->
-                                  <% if(todoData[i].status === 'selesai') { %>
-                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault_<%= todoData[i].id_todo %>" name="status" onchange="updateValue(this)" checked>
-                                  <% } else if(todoData[i].status === 'belum') { %>
-                                    <input class="form-check-input" type="checkbox" value="selesai" id="flexCheckDefault_<%= todoData[i].id_todo %>" name="status" onchange="updateValue(this)">
-                                  <% } %>
-                                  <!-- Tambahkan input tersembunyi untuk menyimpan id_todo -->
-                                  <input type="hidden" name="id_todo" value="<%= todoData[i].id_todo %>">
-                                </form>
-                            </td>
-                            
-                            
-                            <script>
-                                // Fungsi untuk mengupdate nilai input berdasarkan status checkbox
-                                function updateValue(checkbox) {
-                                    var formId = checkbox.id.replace('flexCheckDefault_', 'updateForm_'); // Dapatkan ID formulir berdasarkan ID checkbox
-                                    var status = checkbox.checked ? 'selesai' : 'b'; // Tentukan status berdasarkan apakah checkbox dicentang
-                                    document.getElementById(formId).querySelector('input[name="status"]').value = status; // Atur nilai input status sesuai dengan status yang ditentukan
-                                    document.getElementById(formId).submit(); // Submit formulir sesuai dengan ID yang diperoleh
-                                }
-                            
-                                // Fungsi untuk mengubah subjek menjadi dapat diedit
-                                function editSubject(todoId) {
-                                    var subjekElement = document.getElementById('subjek_' + todoId);
-                                    subjekElement.contentEditable = true; // Set subjek menjadi dapat diedit
-                                    subjekElement.focus(); // Berikan fokus ke subjek
-                                    document.getElementById('save_' + todoId).style.display = 'inline-block'; // Tampilkan tombol simpan
-                                }
-                            
-                                // Fungsi untuk menampilkan tombol simpan setelah pengguna mulai mengedit subjek
-                                function showSaveButton(todoId) {
-                                    document.getElementById('save_' + todoId).style.display = 'inline-block'; // Tampilkan tombol simpan
-                                }
-                            
-                                // Fungsi untuk menyimpan subjek setelah pengguna mengeditnya
-                                function saveSubject(todoId) {
-                                    var subjekElement = document.getElementById('subjek_' + todoId);
-                                    var newSubject = subjekElement.innerText; // Ambil teks yang telah diubah
-                                    subjekElement.contentEditable = false; // Set subjek menjadi tidak dapat diedit lagi
-                                    // Kirim permintaan AJAX atau lakukan tindakan lain untuk menyimpan subjek yang baru ke server
-                                    // Misalnya:
-                                    fetch('/user/update_subjek_todo/'+todoId, {
-                                        method: 'POST',
-                                        body: JSON.stringify({ subject: newSubject }), // Kirim subjek yang baru dalam format JSON
-                                        headers: {
-                                            'Content-Type': 'application/json' // Atur header Content-Type
-                                        }
-                                    })
-                                    .then(response => {
-                                        // Handle response
-                                        console.log("Subject updated successfully");
-                                        document.getElementById('save_' + todoId).style.display = 'none'; // Sembunyikan tombol simpan setelah penyimpanan berhasil
-                                    })
-                                    .catch(error => {
-                                        // Handle error
-                                        console.error("Error updating subject:", error);
-                                        alert("Error updating subject. Please try again."); // Tampilkan pesan kesalahan kepada pengguna
-                                    });
-                                }
-
-                            </script>
-                            
-                            
-                            
-                            <td>
-                                <form action="/user/delete/<%= todoData[i].id_todo %>?_method=DELETE" method="POST">
-                                    
-                                    <input type="hidden" name="_method" value="DELETE">
-                                    <button type="submit" class="btn"><i class="fa-solid fa-delete-left text-danger"></i></button>
-                                </form>
-                            </td>
-
-                            <td>
-                                <button class="btn-edit btn" onclick="editSubject('<%= todoData[i].id_todo %>')"><i class="fa-solid fa-pen text-info"></i></button>
-                            </td>
-                            <td>
-                                <button class="btn-save btn" id="save_<%= todoData[i].id_todo %>" style="display:none;" onclick="saveSubject('<%= todoData[i].id_todo %>')"><i class="fa-solid fa-floppy-disk fa-fade" style="color: #74C0FC;"></i></button>
-                            </td>
-                            <!-- <td>
-                                <i class="fa-solid fa-pen text-info"></i>
-                            </td> -->
-                        </tr>
-                        <% } %>
-                            
-                       
-                    </tbody>
-                </table>
-            </div>
-            
         </div>
     </div>
 
