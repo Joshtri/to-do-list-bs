@@ -20,7 +20,7 @@ exports.UserPage = (req, res) => {
             user.username AS nama_user
             FROM todo
             JOIN user ON todo.user_id = user.id_user
-            WHERE user_id = '${userData.id_user}'  AND status = 'belum  ';
+            WHERE user_id = '${userData.id_user}'  AND status = 'belum';
         `;
 
         const readByStatus = `
@@ -32,6 +32,12 @@ exports.UserPage = (req, res) => {
             user.username AS nama_user
             FROM todo
             JOIN user ON todo.user_id = user.id_user
+            WHERE user_id = '${userData.id_user}' AND status = 'selesai';
+        `;
+
+        const countCompletedQuery = `
+            SELECT COUNT(*) AS total_selesai
+            FROM todo
             WHERE user_id = '${userData.id_user}' AND status = 'selesai';
         `;
 
@@ -62,17 +68,31 @@ exports.UserPage = (req, res) => {
                 });
             });
 
-            return { todoData, completedTodoData };
+            // Query ketiga: menghitung total to-do list dengan status "selesai"
+            const totalSelesai = await new Promise((resolve, reject) => {
+                db.query(countCompletedQuery, (err, results) => {
+                    if (err) {
+                        console.log('gagal menghitung total selesai ', err);
+                        return reject(err);
+                    }
+                    // Mengambil nilai total dari hasil query
+                    const total = results[0].total_selesai || 0;
+                    resolve(total);
+                });
+            });
+
+            return { todoData, completedTodoData, totalSelesai };
         };
 
         // Menjalankan fetchData dan menangani hasilnya
         fetchData()
-            .then(({ todoData, completedTodoData }) => {
+            .then(({ todoData, completedTodoData, totalSelesai }) => {
                 res.render('todo_user', {
                     title,
                     user: userData,
                     todoData,
                     completedTodoData,
+                    totalSelesai,
                     messageCreate,
                     messageLoginSuccess
                 });
@@ -85,6 +105,7 @@ exports.UserPage = (req, res) => {
         console.log(error);
     }
 };
+
 
 
 //create Todo by their id.

@@ -69,7 +69,7 @@
 
 
         <div class="row mt-3 justify-content-between">
-            <div class="mt-4 col-lg-4 border border-3">            
+            <div class="mt-4 col-lg-4">            
                 <div class="card animate__animated animate__fadeInLeft border border-0 p-3 shadow " style="height: 260px;">
 
                     <form action="/user/post_my_todo" method="POST">
@@ -89,7 +89,7 @@
                 </div>
 
             </div>
-            <div class="border border-2 mt-4 col-lg-7 pb-5">         
+            <div class="mt-4 col-lg-7 pb-5">         
                 <div class="card border animate__animated animate__fadeInRight border-0  shadow p-3">
                     <table>
                         <thead>
@@ -230,7 +230,7 @@
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                        Subjek yang kelar ✅ - <span class="badge mx-1 text-bg-secondary">4</span>
+                        Subjek yang kelar ✅ - <span class="badge mx-1 text-bg-secondary"><%= totalSelesai %></span>
                     </button>
                     </h2>
                     <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
