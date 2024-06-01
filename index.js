@@ -15,7 +15,7 @@ const loginRoutes = require('./routes/login');
 const app = express();
 const PORT = process.env.PORT;
 
-database.connect();
+// database.connect();
 
 const client = redis.createClient({
     password: process.env.REDIS_PASS,

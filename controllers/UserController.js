@@ -3,15 +3,13 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 //controller untuk User Main.
-exports.UserPage = (req,res)=>{
+exports.UserPage = (req, res) => {
     //buat variabel dengan nilai untuk title halaman.
-
     try {
         const title = "To-Do List Page";
 
         // Dapatkan data admin dari session dan gunakan sesuai kebutuhan
         const userData = req.session.user;
-
 
         const readByIdQuery = `
             SELECT todo.user_id,
@@ -22,36 +20,71 @@ exports.UserPage = (req,res)=>{
             user.username AS nama_user
             FROM todo
             JOIN user ON todo.user_id = user.id_user
-            WHERE user_id = '${userData.id_user}';
-        `
-        const messageCreate = req.flash('infoCreateTodo')
+            WHERE user_id = '${userData.id_user}'  AND status = 'belum  ';
+        `;
+
+        const readByStatus = `
+            SELECT todo.user_id,
+            subjek_tugas,
+            id_todo,
+            deadline,
+            status,
+            user.username AS nama_user
+            FROM todo
+            JOIN user ON todo.user_id = user.id_user
+            WHERE user_id = '${userData.id_user}' AND status = 'selesai';
+        `;
+
+        const messageCreate = req.flash('infoCreateTodo');
         const messageLoginSuccess = req.flash('infoLoginSuccess');
 
-        db.query(readByIdQuery, (err,results)=>{
-            if(err){
-                res.status(500).json(err);
-                console.log('gagal membaca read ',err);
-                
-            }
+        // Menggunakan async-await untuk menjalankan query secara bersamaan
+        const fetchData = async () => {
+            // Query pertama: membaca semua data to-do list
+            const todoData = await new Promise((resolve, reject) => {
+                db.query(readByIdQuery, (err, results) => {
+                    if (err) {
+                        console.log('gagal membaca read ', err);
+                        return reject(err);
+                    }
+                    resolve(results);
+                });
+            });
 
-            else if(!err){
-                res.render('todo_user',{
+            // Query kedua: membaca data to-do list yang statusnya "selesai"
+            const completedTodoData = await new Promise((resolve, reject) => {
+                db.query(readByStatus, (err, results) => {
+                    if (err) {
+                        console.log('gagal membaca read ', err);
+                        return reject(err);
+                    }
+                    resolve(results);
+                });
+            });
+
+            return { todoData, completedTodoData };
+        };
+
+        // Menjalankan fetchData dan menangani hasilnya
+        fetchData()
+            .then(({ todoData, completedTodoData }) => {
+                res.render('todo_user', {
                     title,
                     user: userData,
-                    todoData : results,
+                    todoData,
+                    completedTodoData,
                     messageCreate,
                     messageLoginSuccess
                 });
-            }
-        })
-
+            })
+            .catch(error => {
+                res.status(500).json(error);
+            });
 
     } catch (error) {
         console.log(error);
     }
-
-
-}
+};
 
 
 //create Todo by their id.
